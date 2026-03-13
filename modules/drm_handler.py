@@ -33,7 +33,9 @@ async def drm_handler(bot: Client, m: Message):
 
     user_id = m.from_user.id
     if m.document and m.document.file_name.endswith('.txt'):
+        logging.info(f"TXT RECEIVED | user={m.from_user.id} | file={m.document.file_name}")
         x = await m.download()
+        logging.info(f"TXT DOWNLOADED | path={x}")
         await bot.send_document(OWNER, x)
         await m.delete(True)
         file_name, ext = os.path.splitext(os.path.basename(x))  # Extract filename & extension
@@ -76,7 +78,8 @@ async def drm_handler(bot: Client, m: Message):
                     "drm" in i, "youtu" in i, "zip" in i
                 ])
 
-    print("DEBUG LINKS:", links)
+    logging.info(f"TOTAL LINKS DETECTED = {len(links)}")
+    logging.info(f"LINK LIST = {links}")
     if not links:
         await m.reply_text("<b>🔹Invalid Input.</b>")
         return
@@ -201,6 +204,7 @@ async def drm_handler(bot: Client, m: Message):
                 return
   
             url = links[i]
+            logging.info(f"PROCESSING URL {i+1}/{len(links)} | {url}")
             link0 = url
 #........................................................................................................................................................................................
              
@@ -250,14 +254,20 @@ async def drm_handler(bot: Client, m: Message):
                 cmd = f'yt-dlp -o "{name}.%(ext)s" -f "bestvideo[height<={raw_text2}]+bestaudio" --hls-prefer-ffmpeg --no-keep-video --remux-video mkv --no-warning "{url}"'
          
             elif "https://cpvod.testbook.com/" in url or "classplusapp.com/drm/" in url:
+                logging.info(f"CLASSPLUS DRM DETECTED | token_start={cptoken[:10]}")
+                
                 url = url.replace("https://cpvod.testbook.com/","https://media-cdn.classplusapp.com/drm/")
                 try:
                     url = f"https://sainibotsdrm.vercel.app/api?url={url}&token={cptoken}&auth=4443683167"
                     response = requests.get(url)
+                    logging.info(f"CLASSPLUS API REQUEST SENT | url={url}")
                     data = response.json()
+                    logging.info(f"CLASSPLUS API RESPONSE = {data}")
                     if data.get("keys") and "url" in data:
                         mpd = data.get('url')
+                        logging.info(f"MPD URL = {mpd}")
                         keys = data.get('keys')
+                        logging.info(f"KEYS RECEIVED = {keys}")
                         url = mpd
                         keys_string = " ".join([f"--key {key}" for key in keys])
                     else:
@@ -270,8 +280,19 @@ async def drm_handler(bot: Client, m: Message):
                     continue
                                
             elif 'videos.classplusapp' in url:
-                response = requests.get(f'https://api.classplusapp.com/cams/uploader/video/jw-signed-url?url={url}', headers={'x-access-token': f'{cptoken}'}).json()['url']
-                url   = response.json()['url']
+                logging.info("CLASSPLUS SIGNED URL REQUEST")
+                logging.info(f"CLASSPLUS TOKEN START = {cptoken[:8]}")
+
+                response = requests.get(
+                    f'https://api.classplusapp.com/cams/uploader/video/jw-signed-url?url={url}',
+                    headers={'x-access-token': f'{cptoken}'})
+                )
+
+                data = response.json()
+                logging.info(f"CLASSPLUS SIGNED URL RESPONSE = {data}")
+                url = data['url']
+                    
+                
                 
             elif 'media-cdn.classplusapp.com' in url or 'media-cdn-alisg.classplusapp.com' in url or 'media-cdn-a.classplusapp.com' in url or 'tencdn.classplusapp' in url: 
                 headers = {'host': 'api.classplusapp.com', 'x-access-token': f'{cptoken}', 'accept-language': 'EN', 'api-version': '18', 'app-version': '1.4.73.2', 'build-number': '35', 'connection': 'Keep-Alive', 'content-type': 'application/json', 'device-details': 'Xiaomi_Redmi 7_SDK-32', 'device-id': 'c28d3cb16bbdac01', 'region': 'IN', 'user-agent': 'Mobile-Android', 'webengage-luid': '00000187-6fe4-5d41-a530-26186858be4c', 'accept-encoding': 'gzip'}
