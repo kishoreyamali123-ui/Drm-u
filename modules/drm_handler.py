@@ -63,6 +63,20 @@ async def drm_handler(bot: Client, m: Message):
         
         if "://" in i:
                 links.append(i)
+                logging.info(f"LINK DETECTED = {i}")
+
+                if "youtu" in i:
+                    logging.info("PLATFORM = YOUTUBE")
+                elif "classplus" in i or "cpvod" in i:
+                    logging.info("PLATFORM = CLASSPLUS")
+                elif "m3u8" in i:
+                    logging.info("PLATFORM = HLS STREAM")
+                elif "mpd" in i:
+                    logging.info("PLATFORM = DASH STREAM")
+                elif "drm" in i:
+                    logging.info("PLATFORM = DRM PROTECTED")
+                else:
+                    logging.info("PLATFORM = UNKNOWN")
                 
                 pdf_count    += ".pdf" in i
                 img_count    += i.endswith((".png", ".jpeg", ".jpg"))
