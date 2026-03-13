@@ -411,7 +411,7 @@ async def drm_handler(bot: Client, m: Message):
                         os.remove(ka)
                     except FloodWait as e:
                         await m.reply_text(str(e))
-                        time.sleep(e.x)
+                        await asyncio.sleep(e.x)
                         continue    
   
                 elif "pdf" in url:
@@ -465,7 +465,7 @@ async def drm_handler(bot: Client, m: Message):
                             os.remove(f'{namef}.pdf')
                         except FloodWait as e:
                             await m.reply_text(str(e))
-                            time.sleep(e.x)
+                            await asyncio.sleep(e.x)
                             continue    
            
                 elif any(ext in url for ext in [".jpg", ".jpeg", ".png"]):
@@ -479,7 +479,7 @@ async def drm_handler(bot: Client, m: Message):
                         os.remove(f'{namef}.{ext}')
                     except FloodWait as e:
                         await m.reply_text(str(e))
-                        time.sleep(e.x)
+                        await asyncio.sleep(e.x)
                         continue    
 
                 elif any(ext in url for ext in [".mp3", ".wav", ".m4a"]):
@@ -496,7 +496,7 @@ async def drm_handler(bot: Client, m: Message):
                         os.remove(f'{namef}.{ext}')
                     except FloodWait as e:
                         await m.reply_text(str(e))
-                        time.sleep(e.x)
+                        await asyncio.sleep(e.x)
                         continue    
                     
                 elif 'encrypted.m' in url:    
@@ -506,7 +506,11 @@ async def drm_handler(bot: Client, m: Message):
                     filename = res_file  
                     await prog1.delete(True)
                     await prog.delete(True)
+                    logging.info(f"UPLOAD START | file={filename} | channel={channel_id}")
+                    logging.info(f"FFMPEG PROCESS START | file={filename}")
                     await helper.send_vid(bot, m, cc, filename, vidwatermark, thumb, name, prog, channel_id)
+                    logging.info(f"FFMPEG PROCESS COMPLETE | file={filename}")
+                    logging.info(f"UPLOAD COMPLETE | file={filename}")
                     count += 1  
                     await asyncio.sleep(1)  
                     continue  
@@ -514,11 +518,18 @@ async def drm_handler(bot: Client, m: Message):
                 elif 'drmcdni' in url or 'drm/wv' in url or 'drm/common' in url:
                     prog = await bot.send_message(channel_id, Show, disable_web_page_preview=True)
                     prog1 = await m.reply_text(Show1, disable_web_page_preview=True)
+                    logging.info(f"DRM DECRYPT START | mpd={mpd}")
+                    logging.info(f"DRM DECRYPT START | mpd={mpd}"
                     res_file = await helper.decrypt_and_merge_video(mpd, keys_string, path, name, raw_text2)
+                    logging.info(f"DRM KEYS = {keys_string}")
                     filename = res_file
                     await prog1.delete(True)
                     await prog.delete(True)
+                    logging.info(f"UPLOAD START | file={filename} | channel={channel_id}")
+                    logging.info(f"FFMPEG PROCESS START | file={filename}")
                     await helper.send_vid(bot, m, cc, filename, vidwatermark, thumb, name, prog, channel_id)
+                    logging.info(f"FFMPEG PROCESS COMPLETE | file={filename}")
+                    logging.info(f"UPLOAD COMPLETE | file={filename}")
                     count += 1
                     await asyncio.sleep(1)
                     continue
@@ -534,11 +545,16 @@ async def drm_handler(bot: Client, m: Message):
 
                     logging.info(f"DOWNLOAD COMPLETE | file={filename}")
                     
+                    size = os.path.getsize(filename)
+                    size = os.path.getsize(filename)
+                    
                     await prog1.delete(True)
                     await prog.delete(True)
+                    logging.info(f"UPLOAD START | file={filename} | channel={channel_id}")
                     await helper.send_vid(bot, m, cc, filename, vidwatermark, thumb, name, prog, channel_id)
+                    logging.info(f"UPLOAD COMPLETE | file={filename}")
                     count += 1
-                    time.sleep(1)
+                    await asyncio.sleep(1)
                 
             except Exception as e:
                 await bot.send_message(channel_id, f'⚠️**Downloading Failed**⚠️\n**Name** =>> `{str(count).zfill(3)} {name1}`\n**Url** =>> {url}\n\n<blockquote expandable><i><b>Failed Reason: {str(e)}</b></i></blockquote>', disable_web_page_preview=True)
@@ -548,7 +564,7 @@ async def drm_handler(bot: Client, m: Message):
 
     except Exception as e:
         await m.reply_text(e)
-        time.sleep(2)
+        await asyncio.sleep(2)
 
     success_count = len(links) - int(raw_text) - failed_count + 1
     video_count = len(links) - pdf_count - img_count
