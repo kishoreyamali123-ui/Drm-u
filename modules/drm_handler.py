@@ -57,9 +57,9 @@ async def drm_handler(bot: Client, m: Message):
     
     links = []
     for i in lines:
-        if "://" in i:
-            i = i.strip()
-            if"://" in i:
+        i = i.strip()
+        
+        if"://" in i:
                 links.append(i)
                 
                 pdf_count    += ".pdf" in i
@@ -75,7 +75,8 @@ async def drm_handler(bot: Client, m: Message):
                     "v2" in i, "mpd" in i, "m3u8" in i,
                     "drm" in i, "youtu" in i, "zip" in i
                 ])
-                    
+
+    print("DEBUG LINKS:", links)
     if not links:
         await m.reply_text("<b>🔹Invalid Input.</b>")
         return
@@ -123,7 +124,7 @@ async def drm_handler(bot: Client, m: Message):
         await editable.delete()
 
     elif m.text:
-        if any(ext in links[i][1] for ext in [".pdf", ".jpeg", ".jpg", ".png"] for i in range(len(links))):
+        if any(ext in links[i] for ext in [".pdf", ".jpeg", ".jpg", ".png"] for i in range(len(links))):
             raw_text = '1'
             raw_text7 = '/d'
             channel_id = m.chat.id
@@ -189,22 +190,22 @@ async def drm_handler(bot: Client, m: Message):
 
 #........................................................................................................................................................................................
     failed_count = 0
-    count =int(raw_text)    
-    arg = int(raw_text)
+    start_index =int(raw_text)    
+    count = start_index
     try:
-        for i in range(arg-1, len(links)):
+        for i in range(start_index-1, len(links)):
             if globals.cancel_requested:
                 await m.reply_text("🚦**STOPPED**🚦")
                 globals.processing_request = False
                 globals.cancel_requested = False
                 return
   
-            Vxy = links[i][1].replace("file/d/","uc?export=download&id=").replace("www.youtube-nocookie.com/embed", "youtu.be").replace("?modestbranding=1", "").replace("/view?usp=sharing","")
-            url = "https://" + Vxy
-            link0 = "https://" + Vxy
+            url = links[i]
+            link0 = url
 #........................................................................................................................................................................................
              
-            name1 = links[i][0].replace("(", "[").replace(")", "]").replace("_", "").replace("\t", "").replace(":", "").replace("/", "").replace("+", "").replace("#", "").replace("|", "").replace("@", "").replace("*", "").replace(".", "").replace("https", "").replace("http", "").strip()
+            name1 = links[i].split("/")[-2]
+            name1 = re.sub(r'[\\/:*?"<>|]',"",name1)
             if "youtu" in url:
                 video_id = helper.get_youtube_video_id(url)
                 url = f"https://www.youtube.com/watch?v={video_id}"
