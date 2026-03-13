@@ -274,6 +274,7 @@ async def drm_handler(bot: Client, m: Message):
                         raise Exception(f"{data.get('error', 'Your Classplus token may be expired.')}")
                         mpd = keys = url = keys_string = None
                 except Exception as e:
+                    logging.error(f"DOWNLOAD FAILED | index={count} | url={url} | error={str(e)}")
                     await bot.send_message(channel_id, f'⚠️**Downloading Failed**⚠️\n**Name** =>> `{str(count).zfill(3)} {name1}`\n**Url** =>> {url}\n\n<blockquote expandable><i><b>Failed Reason to sign url: {str(e)}</b></i></blockquote>', disable_web_page_preview=True)
                     count += 1
                     failed_count += 1
@@ -525,8 +526,14 @@ async def drm_handler(bot: Client, m: Message):
                 else:
                     prog = await bot.send_message(channel_id, Show, disable_web_page_preview=True)
                     prog1 = await m.reply_text(Show1, disable_web_page_preview=True)
+                    
+                    logging.info(f"DOWNLOAD START | name={name} | url={url}")
+                    
                     res_file = await helper.download_video(url, cmd, name)
                     filename = res_file
+
+                    logging.info(f"DOWNLOAD COMPLETE | file={filename}")
+                    
                     await prog1.delete(True)
                     await prog.delete(True)
                     await helper.send_vid(bot, m, cc, filename, vidwatermark, thumb, name, prog, channel_id)
