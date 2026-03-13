@@ -58,21 +58,23 @@ async def drm_handler(bot: Client, m: Message):
     links = []
     for i in lines:
         if "://" in i:
-            url = i.split("://", 1)[1]
-            links.append(i.split("://", 1))
-            pdf_count    += ".pdf" in url
-            img_count    += url.endswith((".png", ".jpeg", ".jpg"))
-            v2_count     += "v2" in url
-            mpd_count    += "mpd" in url
-            m3u8_count   += "m3u8" in url
-            drm_count    += "drm" in url
-            yt_count     += "youtu" in url
-            zip_count    += "zip" in url
-            other_count  += not any([
-                ".pdf" in url, url.endswith((".png", ".jpeg", ".jpg")),
-                "v2" in url, "mpd" in url, "m3u8" in url,
-                "drm" in url, "youtu" in url, "zip" in url
-            ])
+            i = i.strip()
+            if"://" in i:
+                links.append(i)
+                
+                pdf_count    += ".pdf" in i
+                img_count    += i.endswith((".png", ".jpeg", ".jpg"))
+                v2_count     += "v2" in i
+                mpd_count    += "mpd" in i
+                m3u8_count   += "m3u8" in i
+                drm_count    += "drm" in i
+                yt_count     += "youtu" in i
+                zip_count    += "zip" in i
+                other_count  += not any([
+                    ".pdf" in i, i.endswith((".png", ".jpeg", ".jpg")),
+                    "v2" in i, "mpd" in i, "m3u8" in i,
+                    "drm" in i, "youtu" in i, "zip" in i
+                ])
                     
     if not links:
         await m.reply_text("<b>🔹Invalid Input.</b>")
