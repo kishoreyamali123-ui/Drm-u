@@ -259,9 +259,18 @@ async def drm_handler(bot: Client, m: Message):
                 url = url.replace("https://cpvod.testbook.com/","https://media-cdn.classplusapp.com/drm/")
                 try:
                     url = f"https://sainibotsdrm.vercel.app/api?url={url}&token={cptoken}&auth=4443683167"
-                    response = requests.get(url)
                     logging.info(f"CLASSPLUS API REQUEST SENT | url={url}")
-                    data = response.json()
+                    start_api = time.time()
+                    response = requests.get(url)
+                    api_time = round(time.time() - start_api, 2)
+                    logging.info(f"CLASSPLUS API RESPONSE TIME = {api_time}s")
+                    logging.info(f"CLASSPLUS API STATUS = {response.status_code}")
+                    
+                    try:
+                        data = response.json()
+                    except Exception as json _error:
+                        logging.error(f"CLASSPLUS INVALID JSON RESPONSE | url={url} | response={response.text[:500]} | error={str(json_error)}")
+                        raise Exception("Invalid JSON response from ClassPlus API")
                     logging.info(f"CLASSPLUS API RESPONSE = {data}")
                     if data.get("keys") and "url" in data:
                         mpd = data.get('url')
@@ -274,7 +283,7 @@ async def drm_handler(bot: Client, m: Message):
                         raise Exception(f"{data.get('error', 'Your Classplus token may be expired.')}")
                         mpd = keys = url = keys_string = None
                 except Exception as e:
-                    logging.error(f"DOWNLOAD FAILED | index={count} | url={url} | error={str(e)}")
+                    logging.error(f"CLASSPLUS DRM FAILED | index={count} | url={url} | error={str(e)}")
                     await bot.send_message(channel_id, f'⚠️**Downloading Failed**⚠️\n**Name** =>> `{str(count).zfill(3)} {name1}`\n**Url** =>> {url}\n\n<blockquote expandable><i><b>Failed Reason to sign url: {str(e)}</b></i></blockquote>', disable_web_page_preview=True)
                     count += 1
                     failed_count += 1
@@ -566,7 +575,7 @@ async def drm_handler(bot: Client, m: Message):
         await m.reply_text(e)
         await asyncio.sleep(2)
 
-    success_count = len(links) - int(raw_text) - failed_count + 1
+    success_count = (len(links) - (start_index - 1)) - failed_count
     video_count = len(links) - pdf_count - img_count
     if m.document:
         await bot.send_message(channel_id, f"<blockquote>🔗 Total URLs: {len(links)} \n┠🔴 Total Failed URLs: {failed_count}\n┠🟢 Total Successful URLs: {success_count}\n┃   ┠🎥 Total Video URLs: {video_count}\n┃   ┠📄 Total PDF URLs: {pdf_count}\n┃   ┠📸 Total IMAGE URLs: {img_count}</blockquote>\n")
