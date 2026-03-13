@@ -28,16 +28,27 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, 
 # .....,.....,.......,...,.......,....., .....,.....,.......,...,.......,.....,
 import globals
 from logs import logging
+logging.info("BOT STARTED")
 from html_handler import register_html_handlers
+logging.info("html_handlers loaded")
 from drm_handler import register_drm_handlers
+logging.info("drm_handlers loaded")
 from text_handler import register_text_handlers
+logging.info("text_handlers loaded")
 from features import register_feature_handlers
+logging.info("features_handlers loaded")
 from upgrade import register_upgrade_handlers
+logging.info("upgrade_handlers loaded")
 from commands import register_commands_handlers
+logging.info("commands_handlers loaded")
 from settings import register_settings_handlers
+logging.info("settings_handlers loaded")
 from broadcast import register_broadcast_handlers
+logging.info("broadcast_handlers loaded")
 from youtube_handler import register_youtube_handlers
+logging.info("youtube handlers loaded")
 from authorisation import register_authorisation_handlers
+logging.info("authorisation_handlers loaded")
 from vars import API_ID, API_HASH, BOT_TOKEN, OWNER, CREDIT, AUTH_USERS, TOTAL_USERS, cookies_file_path
 # .....,.....,.......,...,.......,....., .....,.....,.......,...,.......,.....,
 
