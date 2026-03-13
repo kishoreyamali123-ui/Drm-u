@@ -61,7 +61,7 @@ async def drm_handler(bot: Client, m: Message):
     for i in lines:
         i = i.strip()
         
-        if"://" in i:
+        if "://" in i:
                 links.append(i)
                 
                 pdf_count    += ".pdf" in i
@@ -325,6 +325,8 @@ async def drm_handler(bot: Client, m: Message):
                 cmd = f'yt-dlp --cookies youtube_cookies.txt -f "{ytf}" "{url}" -o "{name}.mp4"'
             else:
                 cmd = f'yt-dlp -f "{ytf}" "{url}" -o "{name}.mp4"'
+            
+            logging.info(f"DOWNLOAD COMMAND = {cmd}")
 #........................................................................................................................................................................................
             try:
                 if m.text:
