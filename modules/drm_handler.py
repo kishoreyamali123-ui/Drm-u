@@ -309,7 +309,7 @@ async def drm_handler(bot: Client, m: Message):
 
                 response = requests.get(
                     f'https://api.classplusapp.com/cams/uploader/video/jw-signed-url?url={url}',
-                    headers={'x-access-token': f'{cptoken}'})
+                    headers={'x-access-token': f'{cptoken}'}
                 )
 
                 data = response.json()
