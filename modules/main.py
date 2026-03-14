@@ -1,12 +1,19 @@
+import sys
+import os
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
-import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+print("BOT PROCESS STARTING...")
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.end_headers()
         self.wfile.write(b"Bot is running")
+    def do_HEAD(self):
+        self.send_response(200)
+         self.end_headers()
+        
 
 def run_web():
     port = int(os.environ.get("PORT", 10000))
