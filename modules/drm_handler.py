@@ -542,7 +542,7 @@ async def drm_handler(bot: Client, m: Message):
                     prog = await bot.send_message(channel_id, Show, disable_web_page_preview=True)
                     prog1 = await m.reply_text(Show1, disable_web_page_preview=True)
                     logging.info(f"DRM DECRYPT START | mpd={mpd}")
-                    logging.info(f"DRM DECRYPT START | mpd={mpd}"
+                    logging.info(f"DRM DECRYPT START | mpd={mpd}")
                     res_file = await helper.decrypt_and_merge_video(mpd, keys_string, path, name, raw_text2)
                     logging.info(f"DRM KEYS = {keys_string}")
                     filename = res_file
