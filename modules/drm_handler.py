@@ -282,7 +282,7 @@ async def drm_handler(bot: Client, m: Message):
                     
                     try:
                         data = response.json()
-                    except Exception as json _error:
+                    except Exception as json_error:
                         logging.error(f"CLASSPLUS INVALID JSON RESPONSE | url={url} | response={response.text[:500]} | error={str(json_error)}")
                         raise Exception("Invalid JSON response from ClassPlus API")
                     logging.info(f"CLASSPLUS API RESPONSE = {data}")
